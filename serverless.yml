@@ -7,6 +7,7 @@ custom:
   WikiLink: N/A
   Application: ${self:service}
   CostCentre: N/A
+  Faculty: Science
   customDomain:
     domainName: ${file(env/${self:provider.stage}.json):infra.awsApiGatewayCustomDomainName}
     basePath: ${self:service}
@@ -27,6 +28,7 @@ provider:
     WikiLink: ${self:custom.WikiLink}
     Application: ${self:custom.Application}
     CostCentre: ${self:custom.CostCentre}
+    Faculty: ${self:custom.Faculty}
   stackTags:
     ResearchHub: ${self:custom.ResearchHub}
     BusinessService: ${self:custom.BusinessService}
@@ -35,10 +37,12 @@ provider:
     WikiLink: ${self:custom.WikiLink}
     Application: ${self:custom.Application}
     CostCentre: ${self:custom.CostCentre}
+    Faculty: ${self:custom.Faculty}
   environment:
     # Environment variables available to all functions in this service
     LEVEL: INFO
     EXAMPLE_KEY: ${file(env/${self:provider.stage}.json):EXAMPLE_KEY}
+    ELASTICSEARCH_API_KEY: ${file(env/${self:provider.stage}.json):ELASTICSEARCH_API_KEY}
   iamRoleStatements:
     - Effect: Allow
       Action:

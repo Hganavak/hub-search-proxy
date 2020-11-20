@@ -4,6 +4,7 @@ const utils = require("@uoa/utilities");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports.main = async (event) => {
+  console.log(`Received event: \n ${JSON.stringify(event, null, 2)}`);
 
   // POST Request Handler (search query)
   if (event.httpMethod === "POST" && event.body) {
