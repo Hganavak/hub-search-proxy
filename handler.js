@@ -4,10 +4,35 @@ const utils = require("@uoa/utilities");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports.main = async (event) => {
-  console.log(`Received event: \n ${JSON.stringify(event, null, 2)}`);
+  // console.log(`Received event: \n ${JSON.stringify(event, null, 2)}`);
 
   // POST Request Handler (search query)
   if (event.httpMethod === "POST" && event.body) {
+
+    try {
+      console.log('Making request to Elastic');
+      let req = {
+        _source: {
+          includes: [
+            "fields.slug",
+            "fields.title",
+            "fields.summary",
+            "fields.ssoProtected"
+          ]
+        },
+          query: { 
+            simple_query_string: {
+              query: 'weapon~2'
+            }
+          }
+        };
+      await getRes(req)
+        .then(res => res.hits.hits)
+        .then(x => console.log(JSON.stringify(x, null, 2)))
+
+    } catch(e){console.error(e) }
+
+
     return {
       statusCode: 200,
       headers: {
@@ -21,4 +46,30 @@ module.exports.main = async (event) => {
     };
   }
 
+  /******************* */
+  async function getRes(data = null) {
+    const options = {
+      method: data ? "POST" : "GET",
+      hostname: '571e437a04d043d088ac9f8c8e4028fb.ap-southeast-2.aws.found.io',
+      port: 9243,
+      path: '/_search/',
+      headers: {
+        "Authorization": "Basic " + process.env.ELASTICSEARCH_API_KEY,
+        "Content-Type": "application/json",
+      },
+    };
+
+    return new Promise((resolve, reject) => {
+      let request = https.request(options, (res) => {
+        res.setEncoding("utf8");
+        let body = "";
+
+        res.on("data", (chunk) => (body += chunk));
+        res.on("end", () => resolve(JSON.parse(body)));
+        res.on("error", (e) => reject(e));
+      });
+      request.write(JSON.stringify(data));
+      request.end();
+    });
+  }
 };
