@@ -50,7 +50,7 @@ module.exports.main = async (event) => {
   async function getRes(data = null) {
     const options = {
       method: data ? "POST" : "GET",
-      hostname: '571e437a04d043d088ac9f8c8e4028fb.ap-southeast-2.aws.found.io',
+      hostname: '6436fa2b0fdd4163bbfd2ea48a8bfd4d.ap-southeast-2.aws.found.io',
       port: 9243,
       path: '/_search/',
       headers: {
