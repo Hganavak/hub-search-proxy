@@ -8,42 +8,57 @@ module.exports.main = async (event) => {
 
   // POST Request Handler (search query)
   if (event.httpMethod === "POST" && event.body) {
+    console.log({event})
+    let queryString = JSON.parse(event.body).query;
+    console.log(`Received query string: ${queryString}`); 
 
     try {
-      console.log('Making request to Elastic');
-      let req = {
+      let req = { // The query object to be sent to Contentful
         _source: {
           includes: [
             "fields.slug",
             "fields.title",
             "fields.summary",
-            "fields.ssoProtected"
+            "fields.ssoProtected",
+            "fields.searchable",
           ]
         },
-          query: { 
-            simple_query_string: {
-              query: 'weapon~2'
-            }
+        query: { 
+          bool: {
+            must: [
+              {
+                simple_query_string: {
+                  query: `${queryString}~2`
+                }
+              },
+              {
+                term: {
+                  "fields.searchable.en-US": true
+                }
+              }
+            ]
           }
-        };
-      await getRes(req)
+        }
+      };
+
+      let res = await getRes(req) // The response from contentful
         .then(res => res.hits.hits)
-        .then(x => console.log(JSON.stringify(x, null, 2)))
+      console.log(JSON.stringify(res, null, 2));
+
+      return {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          message: "Welcome to hub-search-proxy",
+          your_request: event.body,
+          aws_message: process.env.EXAMPLE_KEY,
+          result: res
+        }),
+      };
 
     } catch(e){console.error(e) }
-
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        message: "Welcome to hub-search-proxy",
-        your_request: event.body,
-        aws_message: process.env.EXAMPLE_KEY,
-      }),
-    };
   }
 
   /******************* */

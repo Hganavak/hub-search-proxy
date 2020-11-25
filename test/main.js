@@ -18,10 +18,11 @@ describe("hub-search-proxy", () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: {
-        comment: "Tread softly because you tread on my dreams",
-      },
+      body: JSON.stringify({
+        query: "agriculture"
+      })
     });
+    console.log(resBody)
     expect(resBody.message).to.contain('hub-search-proxy');
   });
 
@@ -32,9 +33,9 @@ describe("hub-search-proxy", () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: {
-        comment: "Tis better to have tested and lost than never to have tested at all",
-      },
+      body: JSON.stringify({
+        query: "Tis better to have tested and lost than never to have tested at all",
+      }),
     });
     expect(resBody.aws_message).to.contain('Welcome');
   });
