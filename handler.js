@@ -21,6 +21,8 @@ module.exports.main = async (event) => {
             "fields.summary",
             "fields.ssoProtected",
             "fields.searchable",
+            "fields.keywords",
+            "sys.contentType"
           ]
         },
         query: { 
